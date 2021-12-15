@@ -10,9 +10,6 @@ import pandas as pd
 import numpy as np
 import glob
 
-# dirrectory where to save files with info
-directory_path = 'results_files'
-
 
 def set_chrome_options():
     """Sets chrome options for Selenium.
@@ -50,7 +47,8 @@ def scrollPage(n_pages=1):
         for i in range(n_pages-1):
             print("PAGE: {}".format(i+1))
             Pagelength = browser.execute_script(
-                "window.scrollTo(document.body.scrollHeight/2, document.body.scrollHeight);")
+                "window.scrollTo(document.body.scrollHeight/2, document.body.scrollHeight);"
+            )
             source = browser.page_source
             data = bs(source, 'html.parser')
             body = data.find('body')
@@ -63,7 +61,7 @@ def scrollPage(n_pages=1):
 
 
 def getInfo(links, name, save_after):
-    # read the file with images we already parsed (use list_dir.py to create ths file first)
+    # read the file with images we already parsed (use listDirectory.py to create ths file first)
     shortcodes = pd.read_csv('shortcodes.csv')
 
     # do not replace already existing files
@@ -100,8 +98,12 @@ def getInfo(links, name, save_after):
                     posts = json_data['entry_data']['PostPage'][0]['graphql']
                     posts = json.dumps(posts)
                     posts = json.loads(posts)
+
                     x = pd.DataFrame.from_dict(
-                        json_normalize(posts), orient='columns')
+                        json_normalize(posts),
+                        orient='columns'
+                    )
+
                     x.columns = x.columns.str.replace("shortcode_media.", "")
                     result = result.append(x)
                     q += 1
@@ -144,6 +146,7 @@ def instaScrapper(name_list, n_pages, mode='hashtag', save_after=100):
 
             print("Link length After scrollPage: {}".format(len(links)))
             getInfo(links, name, save_after)
+
     else:
         for name in name_list:
             print(' ')
@@ -156,6 +159,9 @@ def instaScrapper(name_list, n_pages, mode='hashtag', save_after=100):
             getInfo(links, name, save_after)
 
 
+# directory where to save files with info
+directory_path = '_results_files'
+
 # path to chrome driver
 opts = set_chrome_options()
 browser = webdriver.Chrome(options=opts)
@@ -164,7 +170,7 @@ links = []
 print("Link length Before Start: {}".format(len(links)))
 
 # how many pages scrap
-n_pages = 1
+n_pages = 10
 
 # hashtag / user
 # mode = 'hashtag'
@@ -176,6 +182,6 @@ name_list = ['josediazvp666']
 # , 'selfiestick', 'selfiequeen'
 # save info each ... (in case of bad connection orsome error during scrapping better do not wait till last /
 # also easier to stop script if you want without loosing all data)
-save_after = 1
+save_after = 5
 
 instaScrapper(name_list, n_pages, mode, save_after)

@@ -8,9 +8,7 @@ services:
       dockerfile: ./Dockerfile-dev
     stdin_open: true
     tty: true
-    # environment:
-    #   REDIS_HOST: redis
-    command: "python3 ./instaScrapper.py"
+    command: python3 ./instaScrapper.py
     volumes:
       - .:/app:delegated
     networks:

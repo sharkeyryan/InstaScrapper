@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd ${BASH_SOURCE%/*}/..
+docker-compose run --rm --entrypoint="python3 ./listDirectory.py" app
