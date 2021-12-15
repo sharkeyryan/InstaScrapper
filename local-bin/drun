@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [ -z `docker-compose ps app | grep -io up` ]; then
+  # echo "Running inside a disposable container..."
+  docker-compose run --rm app $*
+else
+  # echo "Running inside existing active container..."
+  # docker-compose exec app $*
+  docker exec -it $(docker-compose ps -q app) $*
+fi

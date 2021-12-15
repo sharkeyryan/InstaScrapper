@@ -1,0 +1,6 @@
+selenium
+chromedriver
+bs4
+pandas
+numpy
+python-dotenv

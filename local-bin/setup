@@ -1,0 +1,63 @@
+#! /bin/bash
+
+# Colors
+function echo_cyan { echo -e${2} "\033[36m${1}\033[0m"; }
+function echo_green { echo -e${2} "\033[32m${1}\033[0m"; }
+function echo_red { echo -e${2} "\033[31m${1}\033[0m"; }
+function echo_yellow { echo -e${2} "\033[93m${1}\033[0m"; }
+
+function echo_action { echo_cyan "\n## ${1}"; }
+function echo_action_nolf { echo_cyan "\n## ${1}" "n"; }
+function echo_header { echo_yellow "## ${1}" "n"; }
+function echo_footer { echo_yellow "## ${1}\n"; }
+function echo_result { echo_green ${1}; }
+function echo_warning { echo_red "\nWARNING: ${1}\n"; }
+
+if [ "$(uname -s)" == "Darwin" ]; then
+  cd ${BASH_SOURCE%/*}/..
+
+  echo_header "Checking for brew..."
+  if ! [ -x "$(command -v brew)" ]; then
+    echo_action "Installing Brew (https://brew.sh)"
+    ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
+  else
+    echo_result "found"
+  fi
+
+  # check and install docker for mac
+  echo_header  "Checking for docker..."
+  if ! [ -x "$(command -v docker)" ]; then
+    echo_action "Installing Docker (https://www.docker.com)"
+    brew install docker
+  else
+    echo_result "found"
+  fi
+
+  # check and install docker-compose
+  echo_header "Checking for docker-compose..."
+  if ! [ -x "$(command -v docker-compose)" ]; then
+    echo_action "Installing Docker Compose (https://docs.docker.com/compose/)"
+    brew install docker-compose
+  else
+    echo_result "found"
+  fi
+
+  # install bin path
+  echo_header "Checking bin paths..."
+  if ! [[ ":$PATH:" == *"./local-bin:"* ]]; then
+    echo_action_nolf "Setting up bin paths for local-bin..."
+    echo 'export PATH="./local-bin:$PATH"' >> ~/.zshrc
+    . ~/.zshrc
+    echo_result "updated"
+  else
+    echo_result "found"
+  fi
+
+  echo_header "Building local-dev image..."
+  # Build image
+  docker-compose build
+
+  echo_footer "Setup script complete"
+else
+  echo_warning "This set up script is designed to be run in a Mac development environment."
+fi
