@@ -170,7 +170,7 @@ links = []
 print("Link length Before Start: {}".format(len(links)))
 
 # how many pages scrap
-n_pages = 10
+n_pages = 100
 
 # hashtag / user
 # mode = 'hashtag'
@@ -179,9 +179,9 @@ mode = 'user'
 # list of hashtags / usernames
 # name_list = ['tattoodesign']
 name_list = ['josediazvp666']
-# , 'selfiestick', 'selfiequeen'
-# save info each ... (in case of bad connection orsome error during scrapping better do not wait till last /
+
+# save info each ... (in case of bad connection or some error during scrapping better do not wait till last /
 # also easier to stop script if you want without loosing all data)
-save_after = 5
+save_after = 20
 
 instaScrapper(name_list, n_pages, mode, save_after)
