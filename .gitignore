@@ -12,7 +12,7 @@
 
 
 # Thumbnails
-._*
+# _screen_shots/*
 
 # IDE
 .idea/*

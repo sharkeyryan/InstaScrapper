@@ -30,5 +30,5 @@ for curfile in files:
                 print('IMAGE HAVE LOST SOME DATA')
 
 
-print('{}       DOWNLOADED FROM FILE    {}'.format(q, curfile))
-os.rename(curfile, "{}.done".format(curfile))
+    print('{}       DOWNLOADED FROM FILE    {}'.format(q, curfile))
+    os.rename(curfile, "{}.done".format(curfile))

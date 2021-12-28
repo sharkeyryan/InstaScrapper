@@ -11,6 +11,7 @@ data = DataFrame()
 
 for curfile in files:
     temp = pd.read_csv(curfile)
+    
     try:
         tmp = temp[
             [
