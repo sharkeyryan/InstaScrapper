@@ -77,9 +77,6 @@ def login_browser():
 
     browser.save_screenshot("_screen_shots/after_login_page.png")
 
-    # time.sleep(9999999)
-
-
 def login_get_info_browser():
     get_info_browser.implicitly_wait(1)
 
@@ -297,5 +294,4 @@ print("Link length Before Start: {}".format(len(links)))
 
 instaScrapper(NAME_LIST, N_PAGES, MODE, SAVE_AFTER)
 
-browser.close()
 browser.quit()
