@@ -13,7 +13,7 @@
 
 # Thumbnails
 _screen_shots/*
-_result_files/*
+_results_files/*
 _scrapped/*
 
 # IDE

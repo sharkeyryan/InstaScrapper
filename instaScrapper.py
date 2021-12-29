@@ -52,6 +52,9 @@ def set_chrome_options():
     
     return chrome_options
 
+def print_out(prefix, msg):
+    print("================\n{} {}\n================".format(prefix, msg))
+
 def login_browser():
     browser.implicitly_wait(1)
 
@@ -70,7 +73,7 @@ def login_browser():
     login_button = browser.find_element(By.XPATH, "//button[@type='submit']")
     login_button.click()
 
-    time.sleep(3)
+    time.sleep(2)
 
     browser.save_screenshot("_screen_shots/after_login_page.png")
 
@@ -82,7 +85,7 @@ def login_get_info_browser():
 
     get_info_browser.get('https://www.instagram.com/')
 
-    time.sleep(3)
+    time.sleep(5)
 
     get_info_browser.save_screenshot("_screen_shots/login_get_info_browser.png")
 
@@ -95,14 +98,14 @@ def login_get_info_browser():
     login_button = get_info_browser.find_element(By.XPATH, "//button[@type='submit']")
     login_button.click()
 
-    time.sleep(3)
+    time.sleep(2)
 
     get_info_browser.save_screenshot("_screen_shots/after_login_get_info_browser.png")
 
 def scrollPage(n_pages=1):
     print("PAGE: 0")
 
-    time.sleep(3)
+    time.sleep(1)
 
     browser.execute_script(
         "window.scrollTo(0, document.body.scrollHeight);"
@@ -119,7 +122,7 @@ def scrollPage(n_pages=1):
             print('https://www.instagram.com'+href)
             links.append('https://www.instagram.com'+href)
 
-    time.sleep(3)
+    time.sleep(1)
 
     if n_pages > 1:
         for i in range(n_pages-1):
@@ -142,14 +145,12 @@ def scrollPage(n_pages=1):
                     print('https://www.instagram.com'+href)
                     links.append('https://www.instagram.com'+href)
 
-            time.sleep(3)
+            time.sleep(1)
 
 
 def getInfo(links, name, save_after):
     # read the file with images we already parsed (use listDirectory.py to create ths file first)
     shortcodes = pd.read_csv('shortcodes.csv')
-
-    login_get_info_browser()
 
     # do not replace already existing files
     cur_file = 0
@@ -160,6 +161,8 @@ def getInfo(links, name, save_after):
     links = list(set(links))
 
     if len(links) > 0:
+        login_get_info_browser()
+
         result = pd.DataFrame()
 
         q = 0
@@ -176,6 +179,7 @@ def getInfo(links, name, save_after):
 
                 try:
                     print("{}   {}".format(i, links[i]))
+
                     get_info_browser.get(links[i])
 
                     time.sleep(3)
@@ -183,16 +187,22 @@ def getInfo(links, name, save_after):
                     page = get_info_browser.page_source
                     data = bs(page, 'html.parser')
                     body = data.find('body')
-                    script = body.find('script')
-                    raw = script.text.strip().replace('window._sharedData =', '').replace(';', '')
 
-                    print("\n{}\n".format(raw))
-                    
+                    for script in body.find_all("script"):
+                        if script.text.startswith("window.__additionalDataLoaded"):
+                            raw = script.text.strip().replace("window.__additionalDataLoaded('/p/"+short[0]+"/',", '').replace(');', '')
+
+                            break
+
+                    print_out("Debug:", "After script strip")
+
                     json_data = json.loads(raw)
 
-                    print("\n{}\n".format(json_data))
+                    print_out("Debug:", "After JSON load")
 
-                    posts = json_data['entry_data']['PostPage'][0]['graphql']
+                    print_out("json_data:", json_data)
+
+                    posts = json_data["graphql"]
                     posts = json.dumps(posts)
                     posts = json.loads(posts)
 
@@ -209,6 +219,8 @@ def getInfo(links, name, save_after):
                     print(e)
                     print('     CANT PARSE IMAGE')
                     np.nan
+                
+                # finally:
 
                 if q > save_after:
 
@@ -230,9 +242,8 @@ def getInfo(links, name, save_after):
 
         del links[:]
 
-    get_info_browser.close()
-    get_info_browser.quit()
-
+        get_info_browser.close()
+        get_info_browser.quit()
 
 def instaScrapper(name_list, n_pages, mode='hashtag', save_after=100):
     if mode == 'user':
@@ -241,6 +252,7 @@ def instaScrapper(name_list, n_pages, mode='hashtag', save_after=100):
             print('-' * 30)
             print("PARSING NAME: {}".format(name))
             username = name
+
             browser.get('https://www.instagram.com/'+username+'/?hl=en')
 
             browser.save_screenshot('_screen_shots/on_load.png')
