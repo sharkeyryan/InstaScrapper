@@ -175,8 +175,6 @@ def getInfo(links, name, save_after):
             if len(cols) == 0:
 
                 try:
-                    print("{}   {}".format(i, links[i]))
-
                     get_info_browser.get(links[i])
 
                     time.sleep(3)
@@ -191,13 +189,7 @@ def getInfo(links, name, save_after):
 
                             break
 
-                    print_out("Debug:", "After script strip")
-
                     json_data = json.loads(raw)
-
-                    print_out("Debug:", "After JSON load")
-
-                    print_out("json_data:", json_data)
 
                     posts = json_data["graphql"]
                     posts = json.dumps(posts)
@@ -216,8 +208,6 @@ def getInfo(links, name, save_after):
                     print(e)
                     print('     CANT PARSE IMAGE')
                     np.nan
-                
-                # finally:
 
                 if q > save_after:
 
@@ -276,22 +266,20 @@ def instaScrapper(name_list, n_pages, mode='hashtag', save_after=100):
 # directory where to save files with info
 directory_path = '_results_files'
 
-# path to chrome driver
+# Setup Chromdriver
 opts = set_chrome_options()
-# browser = webdriver.Chrome(options=opts)
-
 ser = Service("/usr/local/bin/chromedriver")
-# op = webdriver.ChromeOptions()
 browser = webdriver.Chrome(service=ser, options=opts)
+
+# Login to Instagram with development account to obtain post links
 login_browser()
 
+# Use second Chromerdriver instance to iterate over posts
 get_info_browser = webdriver.Chrome(service=ser, options=opts)
-# login_get_info_browser()
 
 links = []
 
-print("Link length Before Start: {}".format(len(links)))
-
+# Run Scrapper routine
 instaScrapper(NAME_LIST, N_PAGES, MODE, SAVE_AFTER)
 
 browser.quit()
